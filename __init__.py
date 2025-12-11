@@ -9,7 +9,6 @@ WEB_DIRECTORY = "js"
 @PromptServer.instance.routes.get("/lora_trigger_list")
 async def lora_trigger_list(request):
     lora_name = request.rel_url.query.get("lora_name", "")
-
     triggers = ["NONE"]
 
     if not lora_name:
@@ -40,7 +39,6 @@ class LoraTriggerWithExample:
     @classmethod
     def INPUT_TYPES(cls):
         loras = folder_paths.get_filename_list("loras")
-
         return {
             "required": {
                 "lora_name": (loras,),
@@ -53,7 +51,10 @@ class LoraTriggerWithExample:
                     "FLOAT",
                     {"default": 1.0, "min": -20.0, "max": 20.0, "step": 0.01},
                 ),
-            }
+            },
+            "optional": {
+                "prev_hooks": ("HOOKS",),
+            },
         }
 
     RETURN_TYPES = ("HOOKS", "STRING")
@@ -79,25 +80,33 @@ class LoraTriggerWithExample:
         for enc in ("utf-8", "utf-8-sig", "cp949"):
             try:
                 with open(txt_path, "r", encoding=enc, errors="ignore") as f:
-                    text = f.read()
-                    return text
+                    return f.read()
             except Exception:
                 continue
 
         return ""
 
-    def _create_hook(self, lora_name, strength_model, strength_clip):
+    def _create_hook(self, lora_name, strength_model, strength_clip, prev_hooks):
         try:
             from comfy_extras import nodes_hooks
-
-            creator = nodes_hooks.CreateHookLora()
-            hook = creator.create_hook(lora_name, strength_model, strength_clip)
-            return hook
         except Exception:
             return None
 
-    def run(self, lora_name, trigger, strength_model, strength_clip):
-        hook = self._create_hook(lora_name, strength_model, strength_clip)
+        creator = nodes_hooks.CreateHookLora()
+        result = creator.create_hook(
+            lora_name=lora_name,
+            strength_model=strength_model,
+            strength_clip=strength_clip,
+            prev_hooks=prev_hooks,
+        )
+
+        if isinstance(result, tuple) and len(result) > 0:
+            return result[0]
+
+        return result
+
+    def run(self, lora_name, trigger, strength_model, strength_clip, prev_hooks=None):
+        hook = self._create_hook(lora_name, strength_model, strength_clip, prev_hooks)
         text = self._read_trigger_text(lora_name, trigger)
         return (hook, text)
 
