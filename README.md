@@ -7,7 +7,7 @@ A clean and simple ComfyUI custom node that:
 - Provides a trigger selection combo box in the UI
 - Outputs both the generated Hook and the selected trigger text
 
-This node is designed to make using LoRA-specific trigger text easier and fully automated.
+This node makes using LoRA-specific trigger text easier and fully automated.
 
 ---
 
@@ -16,8 +16,8 @@ This node is designed to make using LoRA-specific trigger text easier and fully 
 - Automatic detection of TXT trigger files next to each LoRA
 - Clean UI combo box for selecting trigger names
 - Safe TXT reading with UTF-8 / UTF-8-SIG / CP949 fallback
-- No external dependencies required
-- Minimal, stable design that works across any ComfyUI installation
+- No external dependencies
+- Works on all standard ComfyUI installations
 
 ---
 
@@ -30,13 +30,14 @@ models/loras/my_lora/trigger1.txt
 models/loras/my_lora/style.txt
 models/loras/my_lora/preset_prompt.txt
 
-sql
+markdown
 코드 복사
 
-- The folder name (`my_lora`) must match the LoRA file name **without extension**
-- Every `.txt` file inside that folder will appear in the trigger selector
+Rules:
 
-If no TXT files are found, the trigger list defaults to:
+- The folder name (`my_lora`) must match the LoRA file name **without extension**
+- Every `.txt` file inside that folder appears in the trigger selector
+- If no TXT files are found, the trigger list defaults to:
 
 ["NONE"]
 
@@ -47,7 +48,7 @@ yaml
 
 ## 📥 Installation
 
-Place this repository into your ComfyUI `custom_nodes` folder:
+Place this repository inside your ComfyUI `custom_nodes` folder:
 
 ComfyUI/custom_nodes/comfyui-lora-hook-trigger
 
@@ -70,39 +71,41 @@ Restart ComfyUI after installing.
 
 ## 🧩 Node Overview
 
-### Inputs
+### **Inputs**
 
-| Name           | Type   | Description |
-|----------------|--------|-------------|
-| `lora_name`    | Combo  | Select a LoRA installed under `models/loras` |
-| `trigger`      | String | Controlled by UI; represents selected TXT file name |
-| `strength_model` | Float | LoRA model strength |
-| `strength_clip` | Float | LoRA CLIP strength |
+| Name            | Type   | Description |
+|-----------------|--------|-------------|
+| `lora_name`     | Combo  | Select a LoRA from `models/loras` |
+| `trigger`       | String | Auto-filled by UI |
+| `strength_model` | Float | LoRA strength for model |
+| `strength_clip`  | Float | LoRA strength for CLIP |
 
-### Outputs
+### **Outputs**
 
-| Output  | Type   | Description |
-|---------|--------|-------------|
-| `HOOKS` | Hook   | LoRA hook object that can be applied to models |
-| `example` | String | Contents of the selected TXT file |
+| Output    | Type  | Description |
+|-----------|-------|-------------|
+| `HOOKS`   | Hook  | LoRA hook object |
+| `example` | String| Contents of selected TXT |
 
 ---
 
 ## 🛠 How It Works (Simplified)
 
-### Python (`__init__.py`)
-- Defines the custom node class
-- Provides an HTTP endpoint `/lora_trigger_list`
-- Locates the LoRA path using ComfyUI's `folder_paths`
-- Scans the corresponding folder for TXT files
-- Reads the selected TXT file
-- Builds the LoRA Hook with `CreateHookLora`
+### **Python (`__init__.py`):**
 
-### JavaScript (`js/lora_trigger_ui.js`)
-- Inserts a trigger dropdown into the node UI
-- Hides the raw `trigger` STRING field
-- Syncs the UI value back into the node
-- Calls the server endpoint to update available triggers
+- Defines the custom node
+- Provides HTTP endpoint: `/lora_trigger_list`
+- Locates LoRA path via `folder_paths`
+- Scans folder for TXT files
+- Reads selected TXT file
+- Creates LoRA Hook via `CreateHookLora`
+
+### **JavaScript (`js/lora_trigger_ui.js`):**
+
+- Adds trigger dropdown to UI
+- Hides raw STRING widget
+- Keeps UI value synced to backend
+- Calls server endpoint to refresh trigger list
 
 ---
 
@@ -110,11 +113,10 @@ Restart ComfyUI after installing.
 
 - ComfyUI (latest recommended)
 - No additional dependencies
-- Works on all operating systems supported by ComfyUI
 
 ---
 
 ## 📄 License
 
-You may choose any license you prefer later.  
-For now, this project is shared as-is for community usage.
+You may choose any license later.  
+For now, this project is shared for community use.
