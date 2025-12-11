@@ -23,7 +23,7 @@ This node is designed to make using LoRA-specific trigger text easier and fully 
 
 ## 📁 Folder Structure Example
 
-These are **generic examples**, not user data.
+These are generic examples, not user data.
 
 models/loras/my_lora.safetensors
 models/loras/my_lora/trigger1.txt
@@ -31,10 +31,11 @@ models/loras/my_lora/style.txt
 models/loras/my_lora/preset_prompt.txt
 
 
+Rules:
+
 - The folder name (`my_lora`) must match the LoRA file name **without extension**
 - Every `.txt` file inside that folder will appear in the trigger selector
-
-If no TXT files are found, the trigger list defaults to:
+- If no TXT files are found, the trigger list defaults to:
 
 ["NONE"]
 
@@ -42,6 +43,22 @@ If no TXT files are found, the trigger list defaults to:
 ---
 
 ## 📥 Installation
+
+### 1) Install via ComfyUI Manager (Recommended)
+
+1. Open **ComfyUI Manager** inside ComfyUI.
+2. Go to **Custom Nodes → Install via URL**.
+3. Paste this repository URL:
+
+https://github.com/akaugun/comfyui-lora-hook-trigger
+
+
+4. Click **Install**.
+5. Restart ComfyUI.
+
+---
+
+### 2) Manual Installation
 
 Place this repository into your ComfyUI `custom_nodes` folder:
 
@@ -64,37 +81,39 @@ Restart ComfyUI after installing.
 
 ### Inputs
 
-| Name           | Type   | Description |
-|----------------|--------|-------------|
-| `lora_name`    | Combo  | Select a LoRA installed under `models/loras` |
-| `trigger`      | String | Controlled by UI; represents selected TXT file name |
+| Name            | Type   | Description |
+|-----------------|--------|-------------|
+| `lora_name`     | Combo  | Select a LoRA installed under `models/loras` |
+| `trigger`       | String | Controlled by UI; represents selected TXT file name |
 | `strength_model` | Float | LoRA model strength |
-| `strength_clip` | Float | LoRA CLIP strength |
+| `strength_clip`  | Float | LoRA CLIP strength |
 
 ### Outputs
 
-| Output  | Type   | Description |
-|---------|--------|-------------|
-| `HOOKS` | Hook   | LoRA hook object that can be applied to models |
-| `example` | String | Contents of the selected TXT file |
+| Output    | Type  | Description |
+|-----------|-------|-------------|
+| `HOOKS`   | Hook  | LoRA hook object that can be applied to models |
+| `example` | String| Contents of the selected TXT file |
 
 ---
 
 ## 🛠 How It Works (Simplified)
 
 ### Python (`__init__.py`)
-- Defines the custom node class
-- Provides an HTTP endpoint `/lora_trigger_list`
-- Locates the LoRA path using ComfyUI's `folder_paths`
-- Scans the corresponding folder for TXT files
-- Reads the selected TXT file
-- Builds the LoRA Hook with `CreateHookLora`
+
+- Defines the custom node class  
+- Provides an HTTP endpoint `/lora_trigger_list`  
+- Locates the LoRA path using ComfyUI's `folder_paths`  
+- Scans the corresponding folder for TXT files  
+- Reads the selected TXT file  
+- Builds the LoRA Hook with `CreateHookLora`  
 
 ### JavaScript (`js/lora_trigger_ui.js`)
-- Inserts a trigger dropdown into the node UI
-- Hides the raw `trigger` STRING field
-- Syncs the UI value back into the node
-- Calls the server endpoint to update available triggers
+
+- Inserts a trigger dropdown into the node UI  
+- Hides the raw `trigger` STRING field  
+- Syncs the UI value back into the node  
+- Calls the server endpoint to update available triggers  
 
 ---
 
