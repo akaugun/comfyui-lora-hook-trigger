@@ -58,15 +58,14 @@ Rules:
 
 Place this repository into your ComfyUI `custom_nodes` folder:
 
-```text
 ComfyUI/custom_nodes/comfyui-lora-hook-trigger
 The folder structure must look like this:
-
+```text
 comfyui-lora-hook-trigger/
 ├── __init__.py
 └── js/
     └── lora_trigger_ui.js
-
+```
 Restart ComfyUI after installing.
 
 ---
