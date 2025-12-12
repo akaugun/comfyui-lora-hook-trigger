@@ -48,11 +48,7 @@ Rules:
 
 1. Open **ComfyUI Manager** inside ComfyUI.
 2. Go to **Custom Nodes → Install via URL**.
-3. Paste this repository URL:
-
-https://github.com/akaugun/comfyui-lora-hook-trigger
-
-
+3. Paste this repository URL: https://github.com/akaugun/comfyui-lora-hook-trigger
 4. Click **Install**.
 5. Restart ComfyUI.
 
@@ -70,7 +66,7 @@ Folder structure should look like:
 comfyui-lora-hook-trigger/
 ├── __init__.py
 └── js/
-    └── lora_trigger_ui.js
+ └── lora_trigger_ui.js
 
 Restart ComfyUI after installing.
 
