@@ -25,11 +25,15 @@ This node is designed to make using LoRA-specific trigger text easier and fully 
 
 These are generic examples, not user data.
 
-- models/loras/my_lora.safetensors
-- models/loras/my_lora/trigger1.txt
-- models/loras/my_lora/style.txt
-- models/loras/my_lora/preset_prompt.txt
-
+```text
+models/
+└── loras/
+    ├── my_lora.safetensors
+    └── my_lora/
+        ├── trigger1.txt
+        ├── style.txt
+        └── preset_prompt.txt
+```
 
 Rules:
 
