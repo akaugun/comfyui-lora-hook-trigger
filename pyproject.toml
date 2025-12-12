@@ -28,7 +28,7 @@ Documentation = "https://github.com/akaugun/comfyui-lora-hook-trigger/wiki"
 "Bug Tracker" = "https://github.com/akaugun/comfyui-lora-hook-trigger/issues"
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "akaugun"
 DisplayName = "comfyui-lora-hook-trigger"
 Icon = ""
 includes = [] 
