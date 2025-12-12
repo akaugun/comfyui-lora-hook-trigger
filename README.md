@@ -68,10 +68,9 @@ ComfyUI/custom_nodes/comfyui-lora-hook-trigger
 Folder structure should look like:
 
 comfyui-lora-hook-trigger/
-├── init.py
+├── __init__.py
 └── js/
-└── lora_trigger_ui.js
-
+    └── lora_trigger_ui.js
 
 Restart ComfyUI after installing.
 
