@@ -21,7 +21,7 @@ app.registerExtension({
     const rawTrigger = widgets.find((w) => w?.name === "trigger");
     if (!loraWidget || !rawTrigger) return;
 
-    if (widgets.some((w) => w && w._lht_ui === true)) return;
+    if ((node.widgets || []).some((w) => w && w._lht_ui === true)) return;
 
     rawTrigger.hidden = true;
 
@@ -30,16 +30,18 @@ app.registerExtension({
       "trigger",
       rawTrigger.value ?? "NONE",
       (v) => {
-        rawTrigger.value = v ?? "NONE";
+        const val = v ?? "NONE";
+        rawTrigger.value = val;
+        uiTrigger.value = val;
         node.setDirtyCanvas(true, true);
       },
       { values: ["NONE"] }
     );
-    uiTrigger._lht_ui = true;
 
+    uiTrigger._lht_ui = true;
     uiTrigger.serialize = false;
 
-    const list = node.widgets;
+    const list = node.widgets || [];
     const uiIndex = list.indexOf(uiTrigger);
     const rawIndex = list.indexOf(rawTrigger);
     if (uiIndex !== -1 && rawIndex !== -1 && uiIndex !== rawIndex + 1) {
@@ -47,20 +49,17 @@ app.registerExtension({
       list.splice(rawIndex + 1, 0, uiTrigger);
     }
 
-    const applyTriggerValues = (values) => {
+    const applyValues = (values) => {
       let v = Array.isArray(values) && values.length ? values : ["NONE"];
       if (!v.includes("NONE")) v = ["NONE", ...v];
 
       uiTrigger.options.values = v;
 
       const want = rawTrigger.value ?? uiTrigger.value ?? "NONE";
-      if (v.includes(want)) {
-        uiTrigger.value = want;
-        rawTrigger.value = want;
-      } else {
-        uiTrigger.value = "NONE";
-        rawTrigger.value = "NONE";
-      }
+      const next = v.includes(want) ? want : "NONE";
+
+      rawTrigger.value = next;
+      uiTrigger.value = next;
 
       node.setDirtyCanvas(true, true);
     };
@@ -68,7 +67,7 @@ app.registerExtension({
     const refresh = async () => {
       const loraName = loraWidget.value ?? "";
       const values = await fetchTriggers(loraName);
-      applyTriggerValues(values);
+      applyValues(values);
       if (typeof node.onResize === "function") node.onResize();
     };
 
