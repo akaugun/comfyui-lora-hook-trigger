@@ -8,10 +8,10 @@ This node removes the need to manually manage trigger prompts for each LoRA by d
 
 ## ✨ Features
 
-- Creates a **LoRA Hook** using `comfy_extras.nodes_hooks.CreateHookLora`
+- Creates a **LoRA Hook Group** using `comfy_extras.nodes_hooks.CreateHookLora`
 - Automatically detects trigger `.txt` files for each LoRA
-- Provides a **dropdown selector** in the UI for trigger selection
-- Outputs both the **LoRA hook** and the **selected trigger text**
+- Provides a **dropdown selector (UI-only)** for trigger selection
+- Outputs both the **LoRA hook group** and the **selected trigger text**
 - Safe text loading with encoding fallback:
   - UTF-8
   - UTF-8-SIG
@@ -89,42 +89,42 @@ Restart ComfyUI.
 | Name | Type | Description |
 |-----|-----|------------|
 | lora_name | Combo | Select LoRA |
-| trigger | String | Selected TXT or NONE |
-| strength_model | Float | Model strength |
-| strength_clip | Float | CLIP strength |
+| trigger | String | Selected TXT name or `NONE` |
+| strength_model | Float | LoRA model strength |
+| strength_clip | Float | LoRA CLIP strength |
+| prev_hooks | HOOKS (optional) | Previous hook group to append |
 
 ### Outputs
 
 | Name | Type | Description |
 |-----|-----|------------|
-| hook | HOOK | LoRA hook |
-| example | String | TXT contents |
+| hook | HOOKS | LoRA hook group |
+| trigger_text | String | Contents of selected TXT |
 
 ---
 
 ## 🛠 How It Works
 
 ### Python (`__init__.py`)
-- Defines node
-- `/lora_trigger_list` endpoint
-- Scans trigger TXT files
-- Builds hook via `CreateHookLora`
+- Defines the custom node
+- Exposes `/lora_trigger_list` API
+- Scans trigger TXT files next to LoRA models
+- Builds and combines LoRA hooks safely
 
 ### JavaScript (`js/lora_trigger_ui.js`)
-- Dropdown UI
-- Syncs trigger value
-- Fetches trigger list
+- Injects a UI-only trigger dropdown
+- Keeps workflow serialization stable
+- Syncs selected trigger with hidden value widget
 
 ---
 
 ## ⚙ Requirements
 
-- ComfyUI (latest)
-- No dependencies
+- ComfyUI (latest recommended)
+- No external dependencies
 
 ---
 
 ## 📄 License
 
 See `LICENSE`.
-
