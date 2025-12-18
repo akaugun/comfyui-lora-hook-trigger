@@ -4,7 +4,9 @@ function fetchTriggers(loraName) {
   const q = encodeURIComponent(loraName ?? "");
   return fetch(`/lora_trigger_list?lora_name=${q}`)
     .then((r) => r.json())
-    .then((j) => Array.isArray(j?.triggers) && j.triggers.length ? j.triggers : ["NONE"])
+    .then((j) =>
+      Array.isArray(j?.triggers) && j.triggers.length ? j.triggers : ["NONE"]
+    )
     .catch(() => ["NONE"]);
 }
 
@@ -19,6 +21,8 @@ app.registerExtension({
     const rawTrigger = widgets.find((w) => w?.name === "trigger");
     if (!loraWidget || !rawTrigger) return;
 
+    if (widgets.some((w) => w && w._lht_ui === true)) return;
+
     rawTrigger.hidden = true;
 
     const uiTrigger = node.addWidget(
@@ -31,22 +35,17 @@ app.registerExtension({
       },
       { values: ["NONE"] }
     );
+    uiTrigger._lht_ui = true;
 
-    const reorderWidgets = () => {
-      if (!node.widgets) return;
-      const list = node.widgets;
+    uiTrigger.serialize = false;
 
-      const rawIndex = list.indexOf(rawTrigger);
-      if (rawIndex !== -1) list.splice(rawIndex, 1);
-      list.push(rawTrigger);
-
-      const uiIndex = list.indexOf(uiTrigger);
-      const rawNewIndex = list.indexOf(rawTrigger);
-      if (uiIndex !== -1 && rawNewIndex !== -1) {
-        list.splice(uiIndex, 1);
-        list.splice(rawNewIndex, 0, uiTrigger);
-      }
-    };
+    const list = node.widgets;
+    const uiIndex = list.indexOf(uiTrigger);
+    const rawIndex = list.indexOf(rawTrigger);
+    if (uiIndex !== -1 && rawIndex !== -1 && uiIndex !== rawIndex + 1) {
+      list.splice(uiIndex, 1);
+      list.splice(rawIndex + 1, 0, uiTrigger);
+    }
 
     const applyTriggerValues = (values) => {
       let v = Array.isArray(values) && values.length ? values : ["NONE"];
@@ -70,12 +69,12 @@ app.registerExtension({
       const loraName = loraWidget.value ?? "";
       const values = await fetchTriggers(loraName);
       applyTriggerValues(values);
-      reorderWidgets();
+      if (typeof node.onResize === "function") node.onResize();
     };
 
     const oldLoraCb = loraWidget.callback;
-    loraWidget.callback = async (v) => {
-      if (typeof oldLoraCb === "function") oldLoraCb(v);
+    loraWidget.callback = async function () {
+      if (typeof oldLoraCb === "function") oldLoraCb.apply(this, arguments);
       await refresh();
     };
 
