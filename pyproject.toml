@@ -1,7 +1,7 @@
 [project]
 name = "lora-hook-trigger"
 description = "A clean and simple ComfyUI custom node that creates a LoRA Hook and automatically finds and loads trigger TXT files placed in a folder named after the LoRA file."
-version = "1.0.2"
+version = "1.0.3"
 license = {file = "LICENSE"} 
 # classifiers = [
 #     # For OS-independent nodes (works on all operating systems)
