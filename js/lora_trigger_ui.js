@@ -1,98 +1,93 @@
 import { app } from "/scripts/app.js";
 
+function fetchTriggers(loraName) {
+  const q = encodeURIComponent(loraName ?? "");
+  return fetch(`/lora_trigger_list?lora_name=${q}`)
+    .then((r) => r.json())
+    .then((j) => Array.isArray(j?.triggers) && j.triggers.length ? j.triggers : ["NONE"])
+    .catch(() => ["NONE"]);
+}
+
 app.registerExtension({
-    name: "lora_trigger_example",
+  name: "comfyui-lora-hook-trigger",
 
-    async nodeCreated(node) {
-        if (node.comfyClass !== "LoraTriggerWithExample") return;
+  async nodeCreated(node) {
+    if (node?.comfyClass !== "LoraTriggerWithExample") return;
 
-        const widgets = node.widgets || [];
-        const rawTrigger = widgets.find((w) => w.name === "trigger");
-        const loraWidget = widgets.find((w) => w.name === "lora_name");
+    const widgets = node.widgets || [];
+    const loraWidget = widgets.find((w) => w?.name === "lora_name");
+    const rawTrigger = widgets.find((w) => w?.name === "trigger");
+    if (!loraWidget || !rawTrigger) return;
 
-        if (!rawTrigger || !loraWidget) return;
+    rawTrigger.hidden = true;
 
-        rawTrigger.hidden = true;
+    const uiTrigger = node.addWidget(
+      "combo",
+      "trigger",
+      rawTrigger.value ?? "NONE",
+      (v) => {
+        rawTrigger.value = v ?? "NONE";
+        node.setDirtyCanvas(true, true);
+      },
+      { values: ["NONE"] }
+    );
 
-        const uiTrigger = node.addWidget(
-            "combo",
-            "trigger",
-            "NONE",
-            (value) => {
-                rawTrigger.value = value;
-            },
-            { values: ["NONE"] }
-        );
+    const reorderWidgets = () => {
+      if (!node.widgets) return;
+      const list = node.widgets;
 
-        if (node.widgets && node.widgets.length > 0) {
-            const list = node.widgets;
-            const uiIndex = list.indexOf(uiTrigger);
-            const rawIndex = list.indexOf(rawTrigger);
+      const rawIndex = list.indexOf(rawTrigger);
+      if (rawIndex !== -1) list.splice(rawIndex, 1);
+      list.push(rawTrigger);
 
-            if (uiIndex !== -1 && rawIndex !== -1) {
-                list.splice(uiIndex, 1);
-                list.splice(rawIndex, 0, uiTrigger);
+      const uiIndex = list.indexOf(uiTrigger);
+      const rawNewIndex = list.indexOf(rawTrigger);
+      if (uiIndex !== -1 && rawNewIndex !== -1) {
+        list.splice(uiIndex, 1);
+        list.splice(rawNewIndex, 0, uiTrigger);
+      }
+    };
 
-                const newRawIndex = list.indexOf(rawTrigger);
-                if (newRawIndex !== -1) {
-                    list.splice(newRawIndex, 1);
-                    list.push(rawTrigger);
-                }
-            }
-        }
+    const applyTriggerValues = (values) => {
+      let v = Array.isArray(values) && values.length ? values : ["NONE"];
+      if (!v.includes("NONE")) v = ["NONE", ...v];
 
-        async function updateTriggers() {
-            const lora = loraWidget.value;
-            let values = ["NONE"];
+      uiTrigger.options.values = v;
 
-            if (!lora) {
-                uiTrigger.options.values = values;
-                uiTrigger.value = "NONE";
-                rawTrigger.value = "NONE";
-                if (typeof node.onResize === "function") node.onResize();
-                return;
-            }
+      const want = rawTrigger.value ?? uiTrigger.value ?? "NONE";
+      if (v.includes(want)) {
+        uiTrigger.value = want;
+        rawTrigger.value = want;
+      } else {
+        uiTrigger.value = "NONE";
+        rawTrigger.value = "NONE";
+      }
 
-            try {
-                const resp = await fetch(
-                    "/lora_trigger_list?lora_name=" +
-                        encodeURIComponent(lora),
-                    { method: "GET" }
-                );
+      node.setDirtyCanvas(true, true);
+    };
 
-                if (resp.ok) {
-                    const data = await resp.json();
-                    if (
-                        data &&
-                        Array.isArray(data.triggers) &&
-                        data.triggers.length > 0
-                    ) {
-                        values = data.triggers;
-                    }
-                }
-            } catch (e) {}
+    const refresh = async () => {
+      const loraName = loraWidget.value ?? "";
+      const values = await fetchTriggers(loraName);
+      applyTriggerValues(values);
+      reorderWidgets();
+    };
 
-            if (!values.includes("NONE")) {
-                values = ["NONE", ...values.filter((v) => v !== "NONE")];
-            }
+    const oldLoraCb = loraWidget.callback;
+    loraWidget.callback = async (v) => {
+      if (typeof oldLoraCb === "function") oldLoraCb(v);
+      await refresh();
+    };
 
-            uiTrigger.options.values = values;
+    const oldConfigure = node.onConfigure;
+    node.onConfigure = async function (info) {
+      if (typeof oldConfigure === "function") oldConfigure.call(this, info);
+      await refresh();
+    };
 
-            if (!values.includes(uiTrigger.value)) {
-                uiTrigger.value = values[0];
-            }
-
-            rawTrigger.value = uiTrigger.value;
-
-            if (typeof node.onResize === "function") node.onResize();
-        }
-
-        const origCallback = loraWidget.callback;
-        loraWidget.callback = function () {
-            if (origCallback) origCallback.apply(this, arguments);
-            updateTriggers();
-        };
-
-        setTimeout(updateTriggers, 50);
-    },
+    requestAnimationFrame(async () => {
+      await refresh();
+      setTimeout(refresh, 100);
+    });
+  },
 });
