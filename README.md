@@ -1,12 +1,25 @@
-# ComfyUI LoRA Hook + Trigger Text
+<div align="center">
+  <img src="docs/assets/project-cover.svg" width="100%" alt="ComfyUI LoRA Hook + Trigger Text. LoRA 훅·트리거 문구 커스텀 노드. 설명용 표지">
+  <h1>ComfyUI LoRA Hook + Trigger Text</h1>
+  <p>선택한 LoRA의 훅과 트리거 문구를 함께 꺼냅니다.<br>LoRA 옆의 텍스트 파일을 읽어 HOOKS와 STRING으로 내보내는 ComfyUI 커스텀 노드입니다.</p>
+  <p>소스 v1.0.3 · ComfyUI · 공개 저장소</p>
+  <p><strong><a href="#시작하기">시작하기</a></strong> · <a href="#사용하기">사용 안내</a> · <a href="docs/README.md">문서 둘러보기</a></p>
+</div>
 
-선택한 LoRA의 훅과 트리거 문구를 함께 꺼내는 ComfyUI 커스텀 노드입니다. LoRA와 같은 이름의 폴더에 텍스트 파일을 두면 노드에서 문구를 고를 수 있습니다.
+[살펴보기](#살펴보기) · [시작하기](#시작하기) · [사용하기](#사용하기) · [확인된 범위](#확인된-범위) · [문서와 지원](#문서와-지원) · [이용 조건](#이용-조건)
 
-**버전:** v1.0.3 · **환경:** ComfyUI · **출력:** `HOOKS`, `STRING`
+## 살펴보기
 
-[설치](#설치) · [사용하기](#사용하기) · [입출력](#노드-입출력) · [문제 확인](#문제-확인) · [릴리스](https://github.com/akaugun/comfyui-lora-hook-trigger/releases)
+| 항목 | 설명 | 안내 |
+| :--- | :--- | :--- |
+| 입력 자료 | ComfyUI에 등록한 LoRA와 같은 이름의 폴더에 둔 `.txt` 파일 | [트리거 파일 준비](#트리거-파일-준비) |
+| 노드 | `advanced/hooks`의 **LoRA Hook + Trigger Text** | [노드 연결](#노드-연결) |
+| 출력 | LoRA 훅 `HOOKS`와 선택 문구 `STRING` | [노드 입출력](#노드-입출력) |
 
-## 설치
+실제 실행 화면과 워크플로 이미지는 현재 저장소에 없습니다. 아래 폴더 구성은 설명용 예시입니다.
+
+<a id="설치"></a>
+## 시작하기
 
 ### ComfyUI Manager
 
@@ -62,7 +75,7 @@ models/loras/
 
 `NONE`을 고르면 트리거 문구는 빈 문자열입니다. 파일이 없거나 읽을 수 없는 경우에도 빈 문자열을 반환합니다. 텍스트는 UTF-8-SIG, UTF-8, CP949 순서로 읽고, 모두 실패하면 UTF-8 대체 문자 읽기를 시도합니다.
 
-## 노드 입출력
+### 노드 입출력
 
 | 입력 | 형식 | 역할 |
 |---|---|---|
@@ -77,7 +90,22 @@ models/loras/
 | `hook` | `HOOKS` | 생성하거나 결합한 LoRA 훅 |
 | `trigger_text` | `STRING` | 선택한 텍스트 파일의 내용 |
 
-## 문제 확인
+## 확인된 범위
+
+| 확인 항목 | 상태 | 근거 |
+| :--- | :--- | :--- |
+| 버전·등록 정보 | 소스 v1.0.3 | [패키지 메타데이터](pyproject.toml) |
+| 트리거 읽기·훅 생성 | 현재 소스에서 입출력·폴더명·인코딩 순서 확인 | [Python 노드](__init__.py) |
+| 선택 목록 갱신 | 현재 소스에서 조회·표시·직렬화 경계 확인 | [브라우저 확장](js/lora_trigger_ui.js) |
+| 실제 ComfyUI 실행·호환판 | 시험한 버전과 최소 호환 버전 미기록 | [현재 메타데이터](pyproject.toml) |
+
+소스 확인은 실제 워크플로 실행이나 호환성 통과를 뜻하지 않습니다. 설치 후 사용하는 ComfyUI 버전에서 노드와 훅 결과를 확인하세요.
+
+## 문서와 지원
+
+[문서 둘러보기](docs/README.md)에서 설치, 사용과 구현 경로를 찾습니다. [릴리스](https://github.com/akaugun/comfyui-lora-hook-trigger/releases)에서 게시 기록을 확인합니다.
+
+### 문제 확인
 
 - **노드가 보이지 않음:** 설치 폴더와 ComfyUI 시작 로그를 확인하고 ComfyUI를 다시 시작합니다
 - **트리거가 `NONE`만 표시됨:** 선택한 LoRA 옆의 폴더명과 `.txt` 파일을 확인합니다. LoRA를 다시 선택하면 목록을 조회합니다
@@ -87,16 +115,22 @@ models/loras/
 
 문제는 [이슈](https://github.com/akaugun/comfyui-lora-hook-trigger/issues)에 ComfyUI 버전, 재현 순서와 오류를 남깁니다. 개인 경로·프롬프트·모델 파일은 공유 전에 확인하세요.
 
-## 구현
+### 구현
 
 - [Python 노드](./__init__.py): LoRA 경로 조회, `/lora_trigger_list` 목록 API, 텍스트 읽기와 훅 생성
 - [브라우저 확장](./js/lora_trigger_ui.js): 선택 목록 조회와 표시. UI용 목록은 따로 직렬화하지 않고 기존 `trigger` 값을 갱신합니다
 - [패키지 메타데이터](./pyproject.toml): 버전과 Comfy Registry 등록 정보
 
-## 라이선스 상태
+<details>
+<summary>English summary</summary>
 
-현재 기본 브랜치에는 `LICENSE` 파일이 없습니다. 기존 README와 `pyproject.toml`의 라이선스 파일 표기는 실제 저장소 파일과 일치하지 않습니다.
-
-## English summary
+### English summary
 
 ComfyUI custom node that returns a LoRA hook and trigger text from a folder named after the selected LoRA. The current repository has no LICENSE file or documented tested ComfyUI version.
+
+</details>
+
+<a id="라이선스-상태"></a>
+## 이용 조건
+
+현재 기본 브랜치에는 `LICENSE` 파일이 없습니다. 기존 README와 `pyproject.toml`의 라이선스 파일 표기는 실제 저장소 파일과 일치하지 않습니다.

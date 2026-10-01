@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+<title id="title">ComfyUI LoRA Hook + Trigger Text</title>
+<desc id="desc">LoRA 훅·트리거 문구 커스텀 노드. 공통 문서 표지이며 실제 프로그램 화면이나 실행 결과가 아닙니다.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f3f6f9"/><stop offset="1" stop-color="#dfe9f1"/></linearGradient></defs>
+<rect width="1200" height="300" rx="24" fill="url(#bg)"/>
+<circle cx="1100" cy="40" r="170" fill="#cbdce8" opacity=".5"/>
+<g font-family="Malgun Gothic,Apple SD Gothic Neo,Noto Sans CJK KR,sans-serif" fill="#263e52">
+<text x="64" y="124" font-size="58" font-weight="700">ComfyUI</text>
+<text x="66" y="174" font-size="23" fill="#526b80">LoRA Hook + Trigger Text</text>
+<rect x="66" y="212" width="56" height="4" rx="2" fill="#526f89"/>
+<text x="66" y="253" font-size="17" fill="#526b80">comfyui-lora-hook-trigger</text>
+</g>
+<g transform="translate(840 34)">
+<rect x="14" y="10" width="256" height="228" rx="12" fill="#aec4d5" opacity=".5" transform="rotate(5 128 114)"/>
+<rect width="256" height="228" rx="12" fill="#fff" stroke="#c5d5e1"/>
+<rect x="24" y="25" width="62" height="5" rx="2" fill="#526f89"/>
+<g font-family="Malgun Gothic,Apple SD Gothic Neo,Noto Sans CJK KR,sans-serif" font-size="17" fill="#304b61">
+<text x="24" y="67" font-weight="700">입력부터 결과까지</text>
+<text x="24" y="106">01  LoRA와 문구 선택</text>
+<text x="24" y="143">02  훅·텍스트 읽기</text>
+<text x="24" y="180">03  워크플로에 연결</text>
+</g>
+</g>
+</svg>
